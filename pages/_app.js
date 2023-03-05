@@ -3,6 +3,7 @@ import { AppProps } from "next/app"
 import { AuthContextProvider } from "../context/auth"
 import "../styles/globals.css"
 import { SessionProvider } from "next-auth/react"
+import { PostContextProvider } from "../context/post"
 
 const client = new ApolloClient({
   uri: "https://api.cyberconnect.dev/testnet/",
@@ -11,13 +12,13 @@ const client = new ApolloClient({
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider session={session}>
-      <ApolloProvider client={client}>
-        <AuthContextProvider>
+    <ApolloProvider client={client}>
+      <AuthContextProvider>
+        <PostContextProvider>
           <Component {...pageProps} />
-        </AuthContextProvider>
-      </ApolloProvider>
-    </SessionProvider>
+        </PostContextProvider>
+      </AuthContextProvider>
+    </ApolloProvider>
   )
 }
 

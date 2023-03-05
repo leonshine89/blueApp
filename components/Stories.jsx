@@ -31,7 +31,7 @@ profile: "https://links.papareact.com/snf",
 
 const Stories = () => {
   return (
-    <div className='flex justify-center space-x-3 mx-auto '>
+    <div className='flex justify-center space-x-3 mx-auto overflow-x-auto scrollbar-hide'>
 {stories.map((story) => {
   return  <StoryCard 
     key={story.src} 

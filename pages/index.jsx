@@ -1,90 +1,23 @@
 import Head from "next/head";
-import Web3Modal from "web3modal";
-import { Contract, providers } from "ethers";
 import { useEffect, useRef, useState, useContext } from "react";
-import { IPF_HASH, PROFILE_NFT_ABI, PROFILE_NFT_ADDRESS } from "../constants";
-import {
-  ApolloProvider,
-  ApolloClient,
-  InMemoryCache,
-  gql,
-  useMutation,
-} from "@apollo/client";
-import Panel from "../components/Panel";
+import Feed from "../components/Feed"
+import Widgets from "../components/Widgets"
+
 import { AuthContext } from "../context/auth";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import Login from "../components/Login";
-import {useSession, signIn, signOut} from "next-auth/react"
-import Feed from "../components/Feed";
+import Panel from "../components/Panel";
+import CreatePost from "../components/CreatePost";
+import { PostContext } from "../context/post";
 
 export default function Home({}) {
-  const {data: session} = useSession();
-  if (!session) return <Login />;
-  const { primaryProfile } = useContext(AuthContext);
+  const { primaryProfile, accessToken, createPost,postParam } = useContext(AuthContext);
+  const {post, setPost} = useContext(PostContext)
+  if (!primaryProfile?.profileID) return <Panel />
 
-  const getProviderOrSigner = async (needSigner = false) => {
-    const provider = await web3ModalRef.current.connect();
-    const web3Provider = new providers.Web3Provider(provider);
+    
 
-    const { chainId } = await web3Provider.getNetwork();
-    if (chainId != 97) {
-      window.alert("Please switch to Smart network");
-      throw new Error();
-    }
-    if (needSigner) {
-      const signer = web3Provider.getSigner();
-      return signer;
-    }
-    return web3Provider;
-  };
-
-  const connectWallet = async () => {
-    try {
-      const signer = await getProviderOrSigner(true);
-      const account = await signer.getAddress();
-      console.log(account);
-      const messageResult = await loginGetMessage({
-        variables: {
-          input: {
-            address: account,
-            domain: "xxxxxxx.xxx",
-          },
-        },
-      });
-      const message = messageResult?.data?.loginGetMessage?.message;
-      console.log(message);
-
-      // get the signature for the message signed with the wallet
-      const signature = await signer.signMessage(message);
-
-      // verify the signature on the server and get the access token
-      const accessTokenResult = await loginVerify({
-        variables: {
-          input: {
-            address: account,
-            domain: "xxxxxxx.xxx",
-            signature: signature,
-          },
-        },
-      });
-
-      const accessToken = accessTokenResult?.data?.loginVerify?.accessToken;
-
-      console.log("~~ Access Token ~~");
-      console.log(accessToken);
-
-      /**Save the access token in local storage */
-      localStorage.setItem("accessToken", accessToken);
-
-      setAccessToken(accessToken);
-      setWallectConnected(true);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-
+            // console.log(post);
 
   return (
     <div className="h-screen bg-gray-100 overflow-hidden">
@@ -99,12 +32,15 @@ export default function Home({}) {
     <main className="flex">
       <Sidebar />
       <Feed />
+
+      <Widgets />
     </main>
 
 
 
 
 
+            {createPost ? <CreatePost /> : null}
 
 
 

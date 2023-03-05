@@ -6,12 +6,18 @@ import { useState } from "react";
 import { CHAIN_ID } from "../constants";
 import { useCancellableQuery } from "../hooks/useCancellabeQuery";
 import { PRIMARY_PROFILE } from "../graphql/PrimaryProfile";
-
+import { fetchFile, parseURL } from "../helpers/function";
+import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress";
+// import pinataSDK from "@pinata/sdk";
 export const AuthContext = createContext();
 
 AuthContext.displayName = "AuthContext"
 
 export const AuthContextProvider = ({ children }) => {
+
+  const apiKey = process.env.NEXT_PUBLIC_API_KEY || "";
+const apiSecret = process.env.NEXT_PUBLIC_API_SECRET || "";
+  // const pinata = pinataSDK(apiKey, apiSecret)
   /**State Variable to store the provider */
   const [provider, setProvider] = useState();
 
@@ -33,6 +39,14 @@ export const AuthContextProvider = ({ children }) => {
   /**State variable to store the indexing profiles */
   const [indexingProfiles, setIndexingProfiles] = useState([]);
 
+  
+  const [data, setData] = useState()
+
+  const [profileHandle, setProfileHandle] = useState(undefined);
+  const [profileImage, setProfileImage] = useState(undefined)
+  
+  const [createPost, setCreatePost] = useState(false)
+
   const [login, setLogin] = useState(false)
 
   useEffect(() => {
@@ -44,10 +58,19 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [provider, address])
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("accessToken");
+  //    const address = localStorage.getItem("address");
+  //   setAccessToken(token)
+  //   setAddress(address)
+  
+    
+  // }, [])
+  
   useEffect(() => {
+     
     if (!(address && accessToken)) return;
     let query;
-
     const fetch = async () => {
       try {
         query = useCancellableQuery({
@@ -58,9 +81,17 @@ export const AuthContextProvider = ({ children }) => {
         });
         const res = await query;
         const primaryProfile = res?.data?.address?.wallet?.primaryProfile;
-        console.log(primaryProfile);
+       if (primaryProfile?.profileID) {
+         setProfileHandle(primaryProfile.handle.replace(/.cc\b/g,""));
+       
+           const profileAvatar = primaryProfile.avatar ? primaryProfile.avatar : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
+          setProfileImage(profileAvatar)
+       }
+        
 
         setPrimaryProfile(primaryProfile);
+
+        console.log(primaryProfile);
       } catch (e) {
         console.error(e);
       }
@@ -72,7 +103,42 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [address, accessToken]);
 
+  useEffect(() => {
+    console.log(primaryProfile?.metadata);
+    if (!primaryProfile?.metadata) return;
+
+    (async () => {
+      setData({
+        name: "",
+        bio: ""
+      });
+      try {
+        const res = await fetch(parseURL(primaryProfile?.metadata));
+        if (res.status === 200) {
+          const data = await res.json();
+          console.log(data);
+          setData(data);
+        }
+      } catch (e) {
+        window.alert(e.message)
+      }
+    })();
   
+    
+  }, [primaryProfile?.metadata])
+
+
+  useEffect(() => {
+
+    if(!primaryProfile?.metadata) return;
+    const ipfsHash = primaryProfile?.metadata;
+    (async () => {
+     console.log(fetchFile(ipfsHash));
+    })
+    
+  }, [primaryProfile?.metadata])
+  
+   
   
   
   /**Function to connect with MetaMask Wallet */
@@ -93,6 +159,8 @@ export const AuthContextProvider = ({ children }) => {
         const signer = web3Provider.getSigner();
 
         const address = await signer.getAddress();
+
+        localStorage.setItem('address', address)
 
         setProvider(web3Provider);
         setAddress(address);
@@ -128,7 +196,7 @@ export const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{provider,
-    address, accessToken, primaryProfile, profileCount, badgeCount, indexingProfiles, setProvider, setAddress, setAccessToken, setPrimaryProfile, setBadgeCount, setIndexingProfiles, checkNetwork, connectWallet, login, setLogin}}>
+    address, accessToken, primaryProfile, profileCount, badgeCount, indexingProfiles, setProvider, setAddress, setAccessToken, setPrimaryProfile, setBadgeCount, setIndexingProfiles, checkNetwork, connectWallet, login, setLogin, profileHandle, profileImage, createContext, setCreatePost, createPost, setCreatePost }}>
       {children}
 
     </AuthContext.Provider>

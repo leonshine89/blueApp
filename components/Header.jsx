@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React from 'react'
+import React, { useContext } from 'react'
 import {BellIcon, ChatIcon, ChevronDownIcon, HomeIcon, UserGroupIcon, ViewGridIcon} from "@heroicons/react/solid"
 import {
     FlagIcon,
@@ -9,9 +9,22 @@ import {
 } from "@heroicons/react/outline"
 import HeaderIcon from './HeaderIcon'
 import { signOut, useSession } from 'next-auth/react'
+import { AuthContext } from '../context/auth'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 function Header() {
-    const {data: session} = useSession();
+    const disconect = async () => {
+        const provider = await detectEthereumProvider();
+        console.log(provider);
+        if (provider) {
+             provider.close();
+            localStorage.clear()
+            window.location.reload()
+        }
+    }
+    const {primaryProfile, profileHandle, profileImage} = useContext(AuthContext)
+
+    const src = primaryProfile.avatar ? primaryProfile.avatar : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
   return (
     <div className='sticky top-0 z-50 bg-white flex items-center p-2 lg:px-5 shadow-md'>
 
@@ -41,13 +54,13 @@ function Header() {
         {/***Right */} 
         <div className='flex items-center sm:space-x-2 justify-end'>
             <Image 
-            onClick={signOut}
+            onClick={disconect}
             className="rounded-full cursor-pointer"
-            src={session.user.image}
+            src={profileImage}
             width={"40"}
             height={"40"}
             />
-            <p className='font-semibold pr-3 whitespace-nowrap'>{session.user.name}</p>
+            <p className='font-semibold pr-3 whitespace-nowrap'>{profileHandle}</p>
             <ViewGridIcon className='icon' />
             <ChatIcon className='icon' />
             <BellIcon className='icon' />

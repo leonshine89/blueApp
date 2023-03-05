@@ -1,8 +1,17 @@
 import { getServerSession } from "next-auth/next"
+import { db } from "../../firebase"
 import { authOptions } from "./auth/[...nextauth]"
 
 export default async (req, res) => {
   const session = await getServerSession(req, res, authOptions)
+
+  const posts = await db.collect("posts").orderBy("timestamp", "desc").get()
+
+  const docs = posts.docs.mao((post) => ({
+    id: post.id,
+    ...post.data(),
+    timestamp: null,
+  }))
 
   if (session) {
     res.send({
