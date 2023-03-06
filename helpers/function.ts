@@ -70,3 +70,11 @@ export const timeout = async (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+// export const fetchQuery =async (params:object) => {
+//   let query
+//   try {
+    
+//   } catch (error) {
+    
+//   }
+// }
