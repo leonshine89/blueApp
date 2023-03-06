@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import {
   ChatAltIcon,
   ShareIcon,
@@ -6,6 +6,8 @@ import {
   CameraIcon,
   PhotographIcon,
   ChartBarIcon,
+  ChatAlt2Icon,
+  ChatIcon,
 } from "@heroicons/react/outline"
 import { ThumbUpIcon } from "@heroicons/react/solid"
 import Image from "next/image"
@@ -18,6 +20,7 @@ import {
   GET_LIKE_BY_POST_ID,
 } from "../graphql"
 import Comment from "./Comment"
+import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
 
 const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
   const { profileImage, provider, profileHandle, address, primaryProfile } =
@@ -27,6 +30,7 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
   const commentRef = useRef("")
   const [likeBlue, setLikeBlue] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
+  const [likeArr, setLikeArr] = useState([])
 
   const cyberconnect = new CyberConnect({
     namespace: "blueApp",
@@ -100,7 +104,6 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
     })
     setLikeBlue(true)
   }
-
   useEffect(() => {
     let query
     let postObj = {}
@@ -108,16 +111,15 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
     const fetch = async () => {
       try {
         query = useCancellableQuery({
-          query: GET_COMMENT_BY_ADDRESS,
+          query: GET_LIKE_BY_ADDRESS,
           variables: {
             address: address,
-            likes: {
-              contentType: "POST",
-            },
+            contentType: "POST",
           },
         })
         const res = await query
-        console.log(res)
+        const data = res?.data?.address?.likes?.edges
+        console.log(data)
       } catch (e) {
         console.log(e.message)
         console.log(address)
@@ -128,8 +130,8 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
   }, [primaryProfile])
 
   return (
-    <div className="flex flex-col">
-      <div className="p-5 bg-white mt-5 rounded-t-2xl shadow-sm">
+    <div className="flex flex-col bg-white mb-4 mt-5 rounded-t-md">
+      <div className="p-5 mt-5 rounded-t-2xl shadow-sm">
         <div className="flex items-center space-x-2">
           <img
             src={image}
@@ -150,11 +152,29 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
         </div>
         <p className="pt-4">{message}</p>
       </div>
+
       {postImage && (
         <div className="relative h-56 md:96 bg-white">
           <Image src={postImage} className="object-cover" fill={true} />
         </div>
       )}
+
+      <div className="flex w-full justify-between pr-5">
+        <div className="flex items-center relative pl-5 py-2">
+          <Image src={"/facebook.svg"} width={20} height={20} />
+          <Image
+            src={"/love.svg"}
+            width={20}
+            height={20}
+            className="absolute left-8"
+          />
+          <p className="absolute left-14">{likeCount}</p>
+        </div>
+        <div className="flex items-center text-gray-500">
+          <p>0</p>
+          <ChatAlt2Icon className="h-5 w-5" />
+        </div>
+      </div>
 
       {/* footer of the post  */}
 
@@ -225,4 +245,4 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
   )
 }
 
-export default Post
+export default React.memo(Post)

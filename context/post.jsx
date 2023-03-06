@@ -30,11 +30,7 @@ export const PostContextProvider = ({ children }) => {
         })
         const res = await query
         const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
-        // console.log(
-        //   data.sort((a, b) => {
-        //     return new Date(b.createdAt) - new Date(a.createdAt)
-        //   })
-        // )
+
         setPost(data)
         // postObj = res?.data?.content;
         // setPost(prev => [...prev, postObj].sort((a, b) => {
@@ -60,7 +56,7 @@ export const PostContextProvider = ({ children }) => {
             address: address,
           },
         })
-        const res = await query
+        const res = await queryComment
         console.log(res)
       } catch (e) {
         console.log(e)
@@ -68,7 +64,7 @@ export const PostContextProvider = ({ children }) => {
     }
 
     fetchComment()
-  }, [])
+  }, [address])
 
   return (
     <PostContext.Provider value={{ postParam, setPostParam, post, setPost }}>

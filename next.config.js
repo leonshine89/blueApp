@@ -12,6 +12,9 @@ const nextConfig = {
     NEXTAUTH_URL: "http://localhost:3000/",
     GITHUB_ID: "Iv1.feb9dbda97e5d96d",
     GITHUB_SECRET: "320ebd943ae81bd9aa644a9ca4987e50218be272",
+    NEXT_PUBLIC_SUPABASE_ANON_KEY:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4eWJma2hoaHZiaHVnaWdmcmtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgxMTU4OTAsImV4cCI6MTk5MzY5MTg5MH0.ooyFKWQT981vk3kghjTdMI2bvdqTUARGtO6Fr7BpXNc",
+    NEXT_PUBLIC_SUPABASE_URL: "https://ixybfkhhhvbhugigfrkg.supabase.co",
   },
   reactStrictMode: true,
   swcMinify: true,

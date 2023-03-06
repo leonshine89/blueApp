@@ -8,6 +8,8 @@ import { useCancellableQuery } from "../hooks/useCancellabeQuery"
 import { PRIMARY_PROFILE } from "../graphql/PrimaryProfile"
 import { fetchFile, parseURL } from "../helpers/function"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
+import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
+import { supabase } from "../lib/client"
 // import pinataSDK from "@pinata/sdk";
 export const AuthContext = createContext()
 
@@ -80,6 +82,27 @@ export const AuthContextProvider = ({ children }) => {
         if (primaryProfile?.profileID) {
           setProfileHandle(primaryProfile.handle.replace(/.cc\b/g, ""))
 
+          const { data, error } = await supabase
+            .from("profiles")
+            .upsert({
+              cc_profile_id: primaryProfile?.profileID,
+              address,
+            })
+            .eq("cc_profile_id", primaryProfile?.profileID)
+          if (error) {
+            throw error
+          }
+          const { data: profiles, error: profilesError } = await supabase
+            .from("profiles")
+            .select()
+          if (profilesError) {
+            throw error
+          }
+
+          if (profiles) {
+            alert(JSON.stringify(profiles, null, 2))
+          }
+
           const profileAvatar = primaryProfile.avatar
             ? primaryProfile.avatar
             : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
@@ -101,7 +124,6 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     console.log(primaryProfile?.metadata)
     if (!primaryProfile?.metadata) return
-
     ;(async () => {
       setData({
         name: "",

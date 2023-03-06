@@ -52,12 +52,6 @@ const Posts = () => {
     fetch()
   }, [postParam])
 
-  // console.log(
-  //   post.sort((a, b) => {
-  //     return new Date(b.createdAt) - new Date(a.createdAt)
-  //   })
-  // )
-
   return (
     <div>
       {post.map((post) => {
