@@ -16,7 +16,6 @@ import { AuthContext } from "../context/auth"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
 
 const Posts = () => {
-  const q = query(collection(db, "posts"))
   const { postParam, post, setPost } = useContext(PostContext)
   const { profileHandle, profileImage } = useContext(AuthContext)
 
@@ -43,7 +42,6 @@ const Posts = () => {
             return new Date(b.createdAt) - new Date(a.createdAt)
           })
         )
-        // console.log(postObj);s
       } catch (e) {
         console.log(e)
       }
@@ -57,8 +55,8 @@ const Posts = () => {
       {post.map((post) => {
         return (
           <Post
-            key={post.contentID || post.node.contentID}
-            name={profileHandle}
+            key={post.contentID}
+            name={post.authorHandle || profileHandle}
             message={post.title || post.node.title}
             email={post.email}
             timestamp={post.createdAt || post.node.createdAt}
@@ -72,4 +70,4 @@ const Posts = () => {
   )
 }
 
-export default Posts
+export default React.memo(Posts)

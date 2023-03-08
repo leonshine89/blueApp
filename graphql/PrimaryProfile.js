@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "@apollo/client"
 
 export const PRIMARY_PROFILE = gql`
   query PrimaryProfile($address: AddressEVM!) {
@@ -15,4 +15,4 @@ export const PRIMARY_PROFILE = gql`
       }
     }
   }
-`;
+`

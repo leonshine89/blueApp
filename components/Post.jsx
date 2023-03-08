@@ -21,12 +21,14 @@ import {
 } from "../graphql"
 import Comment from "./Comment"
 import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
+import { PostContext } from "../context/post"
 
 const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
   const { profileImage, provider, profileHandle, address, primaryProfile } =
     useContext(AuthContext)
-  const [comment, setComment] = useState("")
+  const { comments, setComments } = useContext(PostContext)
   const [commentArr, setCommentArr] = useState([])
+  const [comment, setComment] = useState("")
   const commentRef = useRef("")
   const [likeBlue, setLikeBlue] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
@@ -119,7 +121,6 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
         })
         const res = await query
         const data = res?.data?.address?.likes?.edges
-        console.log(data)
       } catch (e) {
         console.log(e.message)
         console.log(address)
@@ -127,6 +128,17 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
     }
 
     fetch()
+  }, [])
+
+  useEffect(() => {
+    let arr = []
+    for (let i = 0; i < comments.length; i++) {
+      const element = comments[i]
+      if (element?.node?.target?.title == message) {
+        arr.push(element?.node)
+      }
+    }
+    setCommentArr((prev) => [...prev, ...arr])
   }, [primaryProfile])
 
   return (
@@ -141,7 +153,7 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
             alt=""
           />
           <div>
-            <p className="font-medium">{name}</p>
+            <p className="font-medium">{name.replace(/.cyber\b/g, "")}</p>
             {timestamp && (
               <p className="text-xs text-gray-400">
                 {new Date(timestamp).toDateString()}
@@ -231,11 +243,12 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
             <button className="hidden">submit</button>
           </form>
         </div>
+
         {commentArr.map((comment) => {
           return (
             <Comment
-              handle={comment.authorHandle}
-              body={comment.body}
+              handle={profileHandle}
+              body={comment.body || comment.node.body}
               image={profileImage}
             />
           )

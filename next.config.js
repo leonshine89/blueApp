@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_API_KEY: "4f72b98eb79b86cb473a",
+    NEXT_PUBLIC_API_KEY: "21fbd9b6fa23101619f3",
     NEXT_PUBLIC_API_SECRET:
-      "007afb77e3e1e9f3e416e107d07255e11abd42781b71cd1c28c002620decb15b",
+      "c1f27114e16263d842f5b127fe310c358533e2c2107d65dac9e2b4a85e0caf5a",
     NEXT_PUBLIC_CYBERCONNECT_API_KEY: "KRDa1CAm3WnzbnDivnrp3cAcWJxohlWA",
     NEXT_PUBLIC_GRAPHQL_ENDPOINT: "https://api.cyberconnect.dev/testnet/",
     NEXT_PUBLIC_CHAIN_ID: 97,

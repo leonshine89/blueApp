@@ -1,6 +1,6 @@
 import detectEthereumProvider from "@metamask/detect-provider"
 import { ExternalProvider, Web3Provider } from "@ethersproject/providers"
-import { createContext, useEffect } from "react"
+import { createContext, useContext, useEffect } from "react"
 import { ethers } from "ethers"
 import { useState } from "react"
 import { CHAIN_ID } from "../constants"
@@ -10,6 +10,7 @@ import { fetchFile, parseURL } from "../helpers/function"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
 import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
 import { supabase } from "../lib/client"
+import { PostContext } from "./post"
 // import pinataSDK from "@pinata/sdk";
 export const AuthContext = createContext()
 
@@ -44,6 +45,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const [profileHandle, setProfileHandle] = useState(undefined)
   const [profileImage, setProfileImage] = useState(undefined)
+  const [pProfiles, setPProfiles] = useState([])
 
   const [createPost, setCreatePost] = useState(false)
 
@@ -58,13 +60,26 @@ export const AuthContextProvider = ({ children }) => {
     }
   }, [provider, address])
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-  //    const address = localStorage.getItem("address");
-  //   setAccessToken(token)
-  //   setAddress(address)
-
-  // }, [])
+  const fetchProfile = async (profiles) => {
+    profiles.forEach(async (el) => {
+      try {
+        let query
+        let address = el.address
+        query = useCancellableQuery({
+          query: PRIMARY_PROFILE,
+          variables: {
+            address: address,
+          },
+        })
+        const res = await query
+        const data = res?.data?.address?.wallet?.primaryProfile
+        setPProfiles((prev) => [...prev, data])
+        console.log(data)
+      } catch (e) {
+        alert(e.message)
+      }
+    })
+  }
 
   useEffect(() => {
     if (!(address && accessToken)) return
@@ -80,7 +95,7 @@ export const AuthContextProvider = ({ children }) => {
         const res = await query
         const primaryProfile = res?.data?.address?.wallet?.primaryProfile
         if (primaryProfile?.profileID) {
-          setProfileHandle(primaryProfile.handle.replace(/.cc\b/g, ""))
+          setProfileHandle(primaryProfile.handle.replace(/.cyber\b/g, ""))
 
           const { data, error } = await supabase
             .from("profiles")
@@ -100,7 +115,8 @@ export const AuthContextProvider = ({ children }) => {
           }
 
           if (profiles) {
-            alert(JSON.stringify(profiles, null, 2))
+            console.log(profiles)
+            fetchProfile(profiles)
           }
 
           const profileAvatar = primaryProfile.avatar
@@ -230,6 +246,8 @@ export const AuthContextProvider = ({ children }) => {
         setCreatePost,
         createPost,
         setCreatePost,
+        pProfiles,
+        setPProfiles,
       }}
     >
       {children}

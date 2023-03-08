@@ -1,4 +1,5 @@
 import React from "react"
+import Friends from "./Friends"
 import InputBox from "./InputBox"
 import Posts from "./Posts"
 import Stories from "./Stories"
@@ -10,6 +11,7 @@ const Feed = () => {
         {/* Storied */}
         <Stories />
         <InputBox />
+        <Friends />
         <Posts />
       </div>
     </div>
