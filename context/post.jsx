@@ -12,6 +12,7 @@ export const PostContext = createContext()
 PostContext.displayName = "AuthContext"
 import { GET_POST } from "../graphql/getPost"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
+import { fetchMetadata } from "../helpers/function"
 import { useCancellableQuery } from "../hooks/useCancellabeQuery"
 import { AuthContext } from "./auth"
 
@@ -21,8 +22,8 @@ export const PostContextProvider = ({ children }) => {
   const [post, setPost] = useState([])
   const [comments, setComments] = useState([])
   const [subscribePosts, setSubscribePosts] = useState([])
-  const [select, setSelect] = useState(false)
   const [subData, setSubData] = useState([])
+  // const [allSub, setAllSub] = useState([])
 
   // console.log(postParam)
 
@@ -42,7 +43,6 @@ export const PostContextProvider = ({ children }) => {
       console.log(e)
     }
   }
-
   // fetch post by address
   useEffect(() => {
     let query
@@ -57,9 +57,29 @@ export const PostContextProvider = ({ children }) => {
         })
         const res = await query
         const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
-        data.forEach((el) => {
-          setPost((prev) => [...prev, el?.node])
-        })
+        // data.forEach(async (el) => {
+        //   let obj = {}
+        //   const ipfHash = el?.node?.body
+        //   console.log(ipfHash)
+        //   const fileResult = await fetchMetadata(ipfHash)
+        //   console.log(fileResult)
+        //   obj = { ...el?.node, body: fileResult }
+        //   console.log(obj)
+        //   setPost((prev) => [...prev, obj])
+        //   console.log(post)
+        // })
+        // bafkreia2mkjzg2hajnvoyslx7u7xmdwrg7fvwm24g5pyqd34cp3nxocdxq
+        // bafkreiereuczy72c37ukp3webq2n5dc7k6h4jg32jse25e6hjxshxciwla
+        for (let i = 0; i < data.length; i++) {
+          let obj = {}
+          const element = data[i]
+          const ipfHash = element?.node?.body
+          const fileResult = await fetchMetadata(ipfHash)
+          obj = { ...element?.node, body: fileResult }
+          setPost((prev) => [...prev, obj])
+          obj = {}
+        }
+
         // setPost(data)
       } catch (e) {
         console.log(e)
@@ -115,21 +135,17 @@ export const PostContextProvider = ({ children }) => {
           console.log(address)
           const res = await fetch(address, GET_POST_BY_ADDRESS)
           console.log(res)
+          // console.log("Res is here")
           const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
-          console.log(data)
+          // console.log(data)
           setSubData(data)
-          console.log(subData)
           data.forEach((el) => {
-            console.log(el?.node)
+            // console.log(el?.node)
             setPost((prev) => [...prev, el?.node])
             setSubscribePosts((prev) => [...prev, el?.node])
           })
-
           console.log(subscribePosts)
-          // setPost((prev) => [...prev])s
         }
-        // setPost((prev) => [...prev, subPost])
-        console.log(subPost)
       } catch (e) {
         console.log(e.message)
         // alert(e.message)
@@ -150,8 +166,7 @@ export const PostContextProvider = ({ children }) => {
         setComments,
         setSubscribePosts,
         subscribePosts,
-        select,
-        setSelect,
+
         subData,
       }}
     >

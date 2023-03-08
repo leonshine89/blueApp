@@ -6,7 +6,7 @@ import { useState } from "react"
 import { CHAIN_ID } from "../constants"
 import { useCancellableQuery } from "../hooks/useCancellabeQuery"
 import { PRIMARY_PROFILE } from "../graphql/PrimaryProfile"
-import { fetchFile, parseURL } from "../helpers/function"
+import { fetchFile, fetchMetadata, parseURL } from "../helpers/function"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
 import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
 import { supabase } from "../lib/client"
@@ -50,6 +50,7 @@ export const AuthContextProvider = ({ children }) => {
   const [createPost, setCreatePost] = useState(false)
 
   const [login, setLogin] = useState(false)
+  const [allSub, setAllSub] = useState([])
 
   useEffect(() => {
     if (!(provider && address)) return
@@ -73,8 +74,8 @@ export const AuthContextProvider = ({ children }) => {
         })
         const res = await query
         const data = res?.data?.address?.wallet?.primaryProfile
-        setPProfiles((prev) => [...prev, data])
-        console.log(data)
+        // setPProfiles((prev) => [...prev, data])
+        // console.log(data)
       } catch (e) {
         alert(e.message)
       }
@@ -94,9 +95,13 @@ export const AuthContextProvider = ({ children }) => {
         })
         const res = await query
         const primaryProfile = res?.data?.address?.wallet?.primaryProfile
+        console.log(primaryProfile)
         if (primaryProfile?.profileID) {
           setProfileHandle(primaryProfile.handle.replace(/.cyber\b/g, ""))
-
+          const ipfsHash = primaryProfile?.metadata
+          const image = fetchMetadata(ipfsHash)
+          setProfileImage(image)
+          // pinata.then((res) => console.log(res))
           const { data, error } = await supabase
             .from("profiles")
             .upsert({
@@ -116,6 +121,7 @@ export const AuthContextProvider = ({ children }) => {
 
           if (profiles) {
             console.log(profiles)
+            setAllSub(profiles)
             fetchProfile(profiles)
           }
 
@@ -124,6 +130,7 @@ export const AuthContextProvider = ({ children }) => {
             : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
           setProfileImage(profileAvatar)
         }
+        console.log(primaryProfile)
 
         setPrimaryProfile(primaryProfile)
       } catch (e) {
@@ -194,6 +201,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   }
 
+  /**Function to check network */
   const checkNetwork = async (provider) => {
     try {
       const network = await provider.getNetwork()
@@ -248,6 +256,8 @@ export const AuthContextProvider = ({ children }) => {
         setCreatePost,
         pProfiles,
         setPProfiles,
+        allSub,
+        setAllSub,
       }}
     >
       {children}

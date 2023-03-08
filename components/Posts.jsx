@@ -35,7 +35,7 @@ const Posts = () => {
           },
         })
         const res = await query
-        console.log(res)
+        console.log(res?.data?.content?.body)
         postObj = res?.data?.content
         setPost((prev) =>
           [...prev, postObj].sort((a, b) => {
@@ -53,16 +53,17 @@ const Posts = () => {
   return (
     <div>
       {post.map((post) => {
+        // console.log(post.body[0])s
         return (
           <Post
             key={post.contentID}
             name={post.authorHandle || profileHandle}
-            message={post.title || post.node.title}
+            message={post.title}
             email={post.email}
-            timestamp={post.createdAt || post.node.createdAt}
+            timestamp={post.createdAt}
             image={profileImage}
-            postImage={post.postImage}
-            id={post.contentID || post.node.contentID}
+            postImage={post.body}
+            id={post.contentID}
           />
         )
       })}

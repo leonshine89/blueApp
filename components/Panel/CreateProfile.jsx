@@ -2,9 +2,10 @@ import { Contract, ethers } from "ethers"
 import React, { useContext, useRef, useState } from "react"
 import { PROFILE_NFT_ABI, PROFILE_NFT_ADDRESS } from "../../constants"
 import { AuthContext } from "../../context/auth"
-import { pinJSONToIPFS } from "../../helpers/function"
 import { XIcon } from "@heroicons/react/outline"
 import HashLoader from "react-spinners/HashLoader"
+import { NFTStorage, File, Blob } from "nft.storage"
+import { client } from "../../helpers/function"
 
 const CreateProfile = ({ createProfile, setCreateProfile }) => {
   const { indexingProfiles, setIndexingProfiles, connectWallet, checkNetwork } =
@@ -42,7 +43,11 @@ const CreateProfile = ({ createProfile, setCreateProfile }) => {
         version: "1.0.0",
       }
       /**Upload metadata to IPFS */
-      const ipfsHash = await pinJSONToIPFS(metadata)
+      // const ipfsHash = await pinJSONToIPFS(metadata)
+
+      const someData = new Blob([avatar])
+      const ipfsHash = await client.storeBlob(someData)
+      console.log(ipfsHash)
 
       const signer = provider.getSigner()
 
@@ -60,7 +65,7 @@ const CreateProfile = ({ createProfile, setCreateProfile }) => {
           to: address,
           handle: handle.toLowerCase(),
           metadata: "",
-          avatar: "",
+          avatar: avatar,
           operator: "0x85AAc6211aC91E92594C01F8c9557026797493AE",
         },
         0x0,

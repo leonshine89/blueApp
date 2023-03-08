@@ -6,12 +6,16 @@ import { Contract } from "ethers"
 import { PROFILE_NFT_ABI, PROFILE_NFT_ADDRESS } from "../constants"
 import CyberConnect, { Env } from "@cyberlab/cyberconnect-v2"
 import { PostContext } from "../context/post"
+import HashLoader from "react-spinners/HashLoader"
+
 const Friend = ({ name, src, profileID }) => {
   const { connectWallet, checkNetwork, provider, address } =
     useContext(AuthContext)
-  const { select, setSelect } = useContext(PostContext)
+  const [select, setSelect] = useState(false)
+  const [loading, setLoading] = useState(false)
   const handleOnClick = async () => {
     try {
+      setLoading(true)
       const provider = await connectWallet()
 
       await checkNetwork(provider)
@@ -35,8 +39,11 @@ const Friend = ({ name, src, profileID }) => {
 
       await tx.wait()
       setSelect(true)
+      setLoading(false)
     } catch (e) {
       console.log(e.message)
+      setLoading(false)
+      throw Error
     }
   }
 
@@ -49,7 +56,9 @@ const Friend = ({ name, src, profileID }) => {
 
   return (
     <div
-      className={`bg-white border rounded-md shadow-md h-60 overflow-hidden mr-3`}
+      className={`bg-white border rounded-md shadow-md h-60 overflow-hidden mr-3 ${
+        select == false ? "block" : "hidden"
+      }`}
     >
       <div className="w-full">
         <Image
@@ -65,11 +74,24 @@ const Friend = ({ name, src, profileID }) => {
       </h1>
 
       <div
-        className="flex items-center p-2 text-sm bg-blue-100 rounded-md m-2 cursor-pointer hover:bg-gray-300 "
+        className="flex items-center justify-center p-2 text-sm bg-blue-100 rounded-md m-2 cursor-pointer hover:bg-gray-300 "
         onClick={handleOnClick}
       >
-        <UserAddIcon className="h-4 w-4 text-blue-600" />
-        <p className="text-blue-600 font-normal ">Add Friend</p>
+        {loading ? (
+          <HashLoader
+            color={"blue"}
+            loading={loading}
+            // cssOverride={override}
+            size={20}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        ) : (
+          <div className="flex">
+            <UserAddIcon className="h-4 w-4 text-blue-600" />
+            <p className="text-blue-600 font-normal ">Add Friend</p>
+          </div>
+        )}
       </div>
     </div>
   )
