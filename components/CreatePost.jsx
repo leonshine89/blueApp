@@ -82,8 +82,6 @@ const CreatePost = () => {
       }
 
       const cpost = cyberConnect.createPost(content)
-      //   const image = fetchMetadata(ipfsHash)
-      //   console.log(image)
       cpost.then((data) => setPostParam(data))
 
       setCreatePost(false)

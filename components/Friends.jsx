@@ -7,8 +7,8 @@ const Friends = () => {
   const { pProfiles, setPProfiles, primaryProfile, allSub, setAllSub } =
     useContext(AuthContext)
   const { subscribePosts, setSubscribePosts } = useContext(PostContext)
-  console.log(subscribePosts)
-  console.log(allSub)
+  // console.log(subscribePosts)
+  // console.log(allSub)
 
   return (
     <div className="bg-white mt-4 pb-4 w-full">

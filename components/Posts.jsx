@@ -14,6 +14,7 @@ import { useCancellableQuery } from "../hooks/useCancellabeQuery"
 import Post from "./Post"
 import { AuthContext } from "../context/auth"
 import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
+import { fetchMetadata } from "../helpers/function"
 
 const Posts = () => {
   const { postParam, post, setPost } = useContext(PostContext)
@@ -24,7 +25,6 @@ const Posts = () => {
     if (!postParam) return
     let query
     let postObj = {}
-    console.log(postParam.contentID)
     const fetch = async () => {
       try {
         const id = postParam?.contentID
@@ -35,8 +35,10 @@ const Posts = () => {
           },
         })
         const res = await query
-        console.log(res?.data?.content?.body)
-        postObj = res?.data?.content
+        console.log(res?.data?.content)
+        const body = await fetchMetadata(res?.data?.content?.body)
+        postObj = { ...res?.data?.content, body: body }
+        console.log(postObj)
         setPost((prev) =>
           [...prev, postObj].sort((a, b) => {
             return new Date(b.createdAt) - new Date(a.createdAt)
@@ -49,11 +51,11 @@ const Posts = () => {
 
     fetch()
   }, [postParam])
+  console.log(post)
 
   return (
     <div>
       {post.map((post) => {
-        // console.log(post.body[0])s
         return (
           <Post
             key={post.contentID}

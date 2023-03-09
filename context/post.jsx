@@ -23,6 +23,9 @@ export const PostContextProvider = ({ children }) => {
   const [comments, setComments] = useState([])
   const [subscribePosts, setSubscribePosts] = useState([])
   const [subData, setSubData] = useState([])
+  const [obj, setObj] = useState({})
+  const [objArr, setObjArr] = useState([])
+
   // const [allSub, setAllSub] = useState([])
 
   // console.log(postParam)
@@ -57,29 +60,16 @@ export const PostContextProvider = ({ children }) => {
         })
         const res = await query
         const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
-        // data.forEach(async (el) => {
-        //   let obj = {}
-        //   const ipfHash = el?.node?.body
-        //   console.log(ipfHash)
-        //   const fileResult = await fetchMetadata(ipfHash)
-        //   console.log(fileResult)
-        //   obj = { ...el?.node, body: fileResult }
-        //   console.log(obj)
-        //   setPost((prev) => [...prev, obj])
-        //   console.log(post)
-        // })
-        // bafkreia2mkjzg2hajnvoyslx7u7xmdwrg7fvwm24g5pyqd34cp3nxocdxq
-        // bafkreiereuczy72c37ukp3webq2n5dc7k6h4jg32jse25e6hjxshxciwla
-        for (let i = 0; i < data.length; i++) {
-          let obj = {}
-          const element = data[i]
-          const ipfHash = element?.node?.body
-          const fileResult = await fetchMetadata(ipfHash)
-          obj = { ...element?.node, body: fileResult }
-          setPost((prev) => [...prev, obj])
-          obj = {}
-        }
 
+        data.forEach(async (el) => {
+          let obj = {}
+          const hash = el?.node.body
+          const body = await fetchMetadata(hash)
+          obj = { ...el?.node, body: body }
+          console.log(obj)
+          setPost((prev) => [...prev, obj])
+        })
+        console.log(post)
         // setPost(data)
       } catch (e) {
         console.log(e)
@@ -134,7 +124,7 @@ export const PostContextProvider = ({ children }) => {
           const address = element?.node?.profile?.owner?.address
           console.log(address)
           const res = await fetch(address, GET_POST_BY_ADDRESS)
-          console.log(res)
+          // console.log(res)
           // console.log("Res is here")
           const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
           // console.log(data)
@@ -144,7 +134,7 @@ export const PostContextProvider = ({ children }) => {
             setPost((prev) => [...prev, el?.node])
             setSubscribePosts((prev) => [...prev, el?.node])
           })
-          console.log(subscribePosts)
+          // console.log(subscribePosts)
         }
       } catch (e) {
         console.log(e.message)
@@ -166,7 +156,7 @@ export const PostContextProvider = ({ children }) => {
         setComments,
         setSubscribePosts,
         subscribePosts,
-
+        obj,
         subData,
       }}
     >

@@ -95,7 +95,7 @@ export const AuthContextProvider = ({ children }) => {
         })
         const res = await query
         const primaryProfile = res?.data?.address?.wallet?.primaryProfile
-        console.log(primaryProfile)
+        // console.log(primaryProfile)
         if (primaryProfile?.profileID) {
           setProfileHandle(primaryProfile.handle.replace(/.cyber\b/g, ""))
           const ipfsHash = primaryProfile?.metadata
@@ -120,7 +120,7 @@ export const AuthContextProvider = ({ children }) => {
           }
 
           if (profiles) {
-            console.log(profiles)
+            // console.log(profiles)
             setAllSub(profiles)
             fetchProfile(profiles)
           }
@@ -130,7 +130,7 @@ export const AuthContextProvider = ({ children }) => {
             : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
           setProfileImage(profileAvatar)
         }
-        console.log(primaryProfile)
+        // console.log(primaryProfile)
 
         setPrimaryProfile(primaryProfile)
       } catch (e) {

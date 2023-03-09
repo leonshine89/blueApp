@@ -1,3 +1,4 @@
+import { data } from "autoprefixer"
 import axios from "axios"
 import { NFTStorage } from "nft.storage"
 import { useCancellableQuery } from "../hooks/useCancellabeQuery"
@@ -75,12 +76,12 @@ export const NFT_STORAGE_TOKEN =
 export const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
 export const fetchMetadata = async (ipfsHash) => {
   try {
-    console.log(ipfsHash)
-    const res = await fetch(`https://ipfs.io/ipfs/${ipfsHash}`)
+    // console.log(ipfsHash)s
     let fileResult = []
+    const res = await fetch(`https://ipfs.io/ipfs/${ipfsHash}`)
     const blob = await res.blob()
     const fileReader = new FileReader()
-    fileReader.readAsDataURL(blob)
+    fileReader.readAsBinaryString(blob)
     fileReader.onloadend = () => {
       const dataUrl = fileReader.result
 
