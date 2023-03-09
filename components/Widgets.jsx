@@ -7,6 +7,7 @@ import { AuthContext } from "../context/auth"
 const Widgets = () => {
   const { pProfiles } = useContext(AuthContext)
   console.log(pProfiles)
+
   return (
     <div className="hidden lg:flex flex-col w-60 p-2 mt-5">
       <div className="flex justify-between items-center text-gray-500 mb-5">

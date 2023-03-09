@@ -52,7 +52,7 @@ function Header() {
           <input
             className="hidden md:inline-flex ml-2 items-center bg-transparent outline-none placeholder-gray-500 flex-shrink"
             type="text"
-            placeholder="Search Facebook"
+            placeholder="Search blueApp"
           />
         </div>
       </div>

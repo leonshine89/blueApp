@@ -168,7 +168,7 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
       </div>
 
       {postImage && (
-        <div className="relative h-96 flex justify-center w-full bg-white">
+        <div className="relative h-96 flex justify-center w-full hover:scale-105 cursor-pointer duration-150 transition-all bg-white">
           <Image src={postImage[0]} fill={true} />
         </div>
       )}
