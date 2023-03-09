@@ -16,7 +16,6 @@ const Friend = ({ name, src, profileID }) => {
   const imageArr = [
     "https://imgs.search.brave.com/Ue7UYN7LYXzmX8gUZCHKjl8CwE6modu6UFtAvjt8aQs/rs:fit:440:440:1/g:ce/aHR0cHM6Ly9tZWRp/YS5ob3dyYXJlLmlz/L2ltYWdlcy9kYS8y/ZmRjMjYxMzhlYmVl/OGQzZWI2YzdiYmY0/YTZhNDhkNy5qcGc",
     "https://imgs.search.brave.com/ui6uM6rJaoKRrN8BY_pbqU1mHlqJBrmQ8sHsvWUpc_0/rs:fit:440:440:1/g:ce/aHR0cHM6Ly9tZWRp/YS5ob3dyYXJlLmlz/L2ltYWdlcy9kYS9i/N2Y2NTU1YjgxMDQ3/MDllYWMxZDMxNjdl/OTRjOGI1OS5qcGc",
-    "https://imgs.search.brave.com/Te8EHqqGPrRb3ex9zKhwxbuIeAhshG8XVU0LinpNKqM/rs:fit:1200:720:1/g:ce/aHR0cHM6Ly9zdGF0/aWMubmV3cy5iaXRj/b2luLmNvbS93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMS8wOC90/cm9vcC1vZi1ib3Jl/ZC1hcGUtbmZ0cy1y/aXNlcy1hYm92ZS10/aGUtY29tcGV0aXRp/b24tbmZ0LXByb2pl/Y3QtZG9uYXRlcy0y/MDBrLWluLWV0aC10/by1vcmFuZ3V0YW4t/b3V0cmVhY2guanBn",
     "https://imgs.search.brave.com/lGh5KMmqIfcEtrelkZy_TluVjtjnE2QMVGNumflfp9g/rs:fit:440:440:1/g:ce/aHR0cHM6Ly9tZWRp/YS5ob3dyYXJlLmlz/L2ltYWdlcy9kYS84/YWU2MjEwNTY4NGEz/OTk1ODgxZTZjM2Y2/NjJiYWQ3MC5qcGc",
     "https://imgs.search.brave.com/LgUTU2RcB1oxosAiZ2AK7WIyKczO93zATimoV4pkSto/rs:fit:400:400:1/g:ce/aHR0cHM6Ly9haXJu/ZnRzLnMzLmFtYXpv/bmF3cy5jb20vbmZ0/LWltYWdlcy8yMDIy/MDQxMi9EZWdlbl9h/cGVfdGVzdF8yXzE2/NDk3NTAwMDE3MzAu/cG5n",
     "https://imgs.search.brave.com/eVeEG13qKPe6XsVLrajdz_JjNo5HWOmskLN-ypXMmuc/rs:fit:440:440:1/g:ce/aHR0cHM6Ly9tZWRp/YS5ob3dyYXJlLmlz/L2ltYWdlcy9kYS85/Njg1MTgyMWUyODcx/NTJlM2M2OGFkY2E4/MTU0YmRiYS5qcGc",
@@ -102,7 +101,7 @@ const Friend = ({ name, src, profileID }) => {
             data-testid="loader"
           />
         ) : (
-          <div className="flex">
+          <div className="flex items-center">
             <UserAddIcon className="h-4 w-4 text-blue-600" />
             <p className="text-blue-600 font-normal ">Add Friend</p>
           </div>

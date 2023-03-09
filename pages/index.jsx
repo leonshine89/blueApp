@@ -9,11 +9,12 @@ import Sidebar from "../components/Sidebar"
 import Panel from "../components/Panel"
 import CreatePost from "../components/CreatePost"
 import { PostContext } from "../context/post"
+import Message from "../components/Message"
 
 export default function Home({}) {
   const { primaryProfile, accessToken, createPost, postParam } =
     useContext(AuthContext)
-  const { post, setPost } = useContext(PostContext)
+  const { post, setPost, showChat, setShowChat } = useContext(PostContext)
   if (!primaryProfile?.profileID) return <Panel />
 
   // console.log(post);
@@ -21,7 +22,7 @@ export default function Home({}) {
   return (
     <div className="h-screen bg-gray-100 overflow-hidden">
       <Head>
-        <title>FaceBook</title>
+        <title>blueApp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -33,6 +34,8 @@ export default function Home({}) {
         <Feed />
 
         <Widgets />
+
+        {showChat && <Message />}
       </main>
 
       {createPost ? <CreatePost /> : null}

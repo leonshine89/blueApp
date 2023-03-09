@@ -163,27 +163,6 @@ export const AuthContextProvider = ({ children }) => {
   }, [address, accessToken, arr, pProfiles])
 
   useEffect(() => {
-    // console.log(primaryProfile?.metadata)
-    // if (!primaryProfile?.metadata) return
-    // ;(async () => {
-    //   setData({
-    //     name: "",
-    //     bio: "",
-    //   })
-    //   try {
-    //     const res = await fetch(parseURL(primaryProfile?.metadata))
-    //     if (res.status === 200) {
-    //       const data = await res.json()
-    //       console.log(data)
-    //       setData(data)
-    //     }
-    //   } catch (e) {
-    //     window.alert(e.message)
-    //   }
-    // })()
-  }, [primaryProfile?.metadata])
-
-  useEffect(() => {
     const fetch = async () => {
       const { data, error } = await supabase
         .from("profiles")

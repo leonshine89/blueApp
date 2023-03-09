@@ -1,16 +1,12 @@
-import React from "react"
+import React, { useContext } from "react"
 import { DotsHorizontalIcon, VideoCameraIcon } from "@heroicons/react/solid"
 import { SearchIcon } from "@heroicons/react/outline"
 import Contact from "./Contact"
+import { AuthContext } from "../context/auth"
 
-const contacts = [
-  { src: "https://links.papareact.com/kxk", name: "Elon Mush" },
-  { src: "https://links.papareact.com/zvy", name: "Bill Gates" },
-  { src: "https://links.papareact.com/snf", name: "Mark Zuckerberg" },
-  { src: "https://links.papareact.com/d0c", name: "Harry Potter" },
-  { src: "https://links.papareact.com/6gg", name: "The Queen" },
-]
 const Widgets = () => {
+  const { pProfiles } = useContext(AuthContext)
+  console.log(pProfiles)
   return (
     <div className="hidden lg:flex flex-col w-60 p-2 mt-5">
       <div className="flex justify-between items-center text-gray-500 mb-5">
@@ -21,9 +17,12 @@ const Widgets = () => {
           <DotsHorizontalIcon className="h-6" />
         </div>
       </div>
-      {contacts.map((contact) => {
+      {pProfiles.map((contact) => {
         return (
-          <Contact key={contact.src} src={contact.src} name={contact.name} />
+          <Contact
+            key={contact.id}
+            name={contact.handle.replace(/.cyber\b/g, "")}
+          />
         )
       })}
     </div>

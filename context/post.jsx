@@ -25,6 +25,7 @@ export const PostContextProvider = ({ children }) => {
   const [subData, setSubData] = useState([])
   const [obj, setObj] = useState({})
   const [objArr, setObjArr] = useState([])
+  const [showChat, setShowChat] = useState(false)
 
   // const [allSub, setAllSub] = useState([])
 
@@ -195,6 +196,8 @@ export const PostContextProvider = ({ children }) => {
         subscribePosts,
         obj,
         subData,
+        showChat,
+        setShowChat,
       }}
     >
       {children}

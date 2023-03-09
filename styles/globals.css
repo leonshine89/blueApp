@@ -17,6 +17,9 @@
     .formInput {
         @apply px-2 rounded-md w-[48%] mb-3 h-10 bg-slate-100 border border-slate-300 focus:outline-none
     }
+    .messageIcon {
+        @apply bg-transparent text-blue-700 h-5 ml-2 cursor-pointer hover:text-blue-500 p-0 
+    }
 }
 
 .before::before {
