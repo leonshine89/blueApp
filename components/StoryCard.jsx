@@ -11,8 +11,8 @@ const StoryCard = ({ src, name, profile }) => {
         <Image
           className="absolute opacity-0 lg:opacity-100 rounded-full z-50 top-6 object-cover h-10 w-10  border-4 shadow-xl border-blue-500 "
           src={profile}
-          width={40}
-          height={40}
+          width={70}
+          height={70}
           alt="profile"
         />
       )}

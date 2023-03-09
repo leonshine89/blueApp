@@ -141,7 +141,7 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
     setCommentArr((prev) => [...prev, ...arr])
   }, [primaryProfile])
 
-  console.log(postImage)
+  // console.log(postImage)
   // const thisImage = postImage[0]
   return (
     <div className="flex flex-col bg-white mb-4 mt-5 rounded-t-md">
@@ -168,7 +168,7 @@ const Post = ({ name, message, email, timestamp, image, postImage, id }) => {
       </div>
 
       {postImage && (
-        <div className="relative h-56 md:96 bg-white">
+        <div className="relative h-96 flex justify-center w-full bg-white">
           <Image src={postImage[0]} fill={true} />
         </div>
       )}

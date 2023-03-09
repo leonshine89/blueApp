@@ -11,6 +11,8 @@ import { GET_POST_BY_ADDRESS } from "../graphql/getPostByAddress"
 import { GET_LIKE_BY_ADDRESS } from "../graphql/getLikeByAddress"
 import { supabase } from "../lib/client"
 import { PostContext } from "./post"
+import { GET_SUBSCRIBER_BY_ADDRESS } from "../graphql"
+import { async } from "@firebase/util"
 // import pinataSDK from "@pinata/sdk";
 export const AuthContext = createContext()
 
@@ -48,9 +50,9 @@ export const AuthContextProvider = ({ children }) => {
   const [pProfiles, setPProfiles] = useState([])
 
   const [createPost, setCreatePost] = useState(false)
-
-  const [login, setLogin] = useState(false)
+  const [arr, setArr] = useState([])
   const [allSub, setAllSub] = useState([])
+  const [login, setLogin] = useState(false)
 
   useEffect(() => {
     if (!(provider && address)) return
@@ -73,13 +75,39 @@ export const AuthContextProvider = ({ children }) => {
           },
         })
         const res = await query
+        console.log(res)
         const data = res?.data?.address?.wallet?.primaryProfile
-        // setPProfiles((prev) => [...prev, data])
+        setPProfiles((prev) => [...prev, data])
         // console.log(data)
       } catch (e) {
         alert(e.message)
       }
     })
+  }
+
+  const fetchSubscribers = async () => {
+    let query
+    try {
+      query = useCancellableQuery({
+        query: GET_SUBSCRIBER_BY_ADDRESS,
+        variables: {
+          address: address,
+        },
+      })
+      const res = await query
+      console.log(res)
+      const data = res?.data?.address?.wallet?.subscribings?.edges
+      console.log(data)
+
+      let pArr = []
+      data.forEach((el) => {
+        pArr.push(el?.node?.profile?.id)
+        setArr((prev) => [...prev, el?.node?.profile?.id])
+        // console.log(arr)
+      })
+    } catch (e) {
+      console.log(e.message)
+    }
   }
 
   useEffect(() => {
@@ -94,43 +122,33 @@ export const AuthContextProvider = ({ children }) => {
           },
         })
         const res = await query
+        console.log(res)
         const primaryProfile = res?.data?.address?.wallet?.primaryProfile
         // console.log(primaryProfile)
         if (primaryProfile?.profileID) {
           setProfileHandle(primaryProfile.handle.replace(/.cyber\b/g, ""))
           const ipfsHash = primaryProfile?.metadata
-          const image = fetchMetadata(ipfsHash)
-          setProfileImage(image)
-          // pinata.then((res) => console.log(res))
-          const { data, error } = await supabase
-            .from("profiles")
-            .upsert({
-              cc_profile_id: primaryProfile?.profileID,
-              address,
+          console.log(ipfsHash)
+          if (arr.length >= 1) {
+            pProfiles.forEach((el) => {
+              if (!arr.includes(el.id)) {
+                setAllSub((prev) => [...prev, el])
+                // console.log(el)
+              }
+              //  console.log(subProfiles)
             })
-            .eq("cc_profile_id", primaryProfile?.profileID)
-          if (error) {
-            throw error
-          }
-          const { data: profiles, error: profilesError } = await supabase
-            .from("profiles")
-            .select()
-          if (profilesError) {
-            throw error
+          } else {
+            pProfiles.forEach((el) => {
+              setAllSub((prev) => [...prev, el])
+            })
           }
 
-          if (profiles) {
-            // console.log(profiles)
-            setAllSub(profiles)
-            fetchProfile(profiles)
-          }
-
-          const profileAvatar = primaryProfile.avatar
-            ? primaryProfile.avatar
+          const profileAvatar = primaryProfile.body
+            ? primaryProfile.body
             : "https://imgs.search.brave.com/6FnuC9ucTueo6fu1ZlwWDtqFhX62s8A5ngX8qMwB2Lk/rs:fit:600:600:1/g:ce/aHR0cHM6Ly9zdDMu/ZGVwb3NpdHBob3Rv/cy5jb20vOTk5ODQz/Mi8xMzMzNS92LzQ1/MC9kZXBvc2l0cGhv/dG9zXzEzMzM1MjA4/OC1zdG9jay1pbGx1/c3RyYXRpb24tZGVm/YXVsdC1wbGFjZWhv/bGRlci1wcm9maWxl/LWljb24uanBn"
           setProfileImage(profileAvatar)
         }
-        // console.log(primaryProfile)
+        console.log(primaryProfile)
 
         setPrimaryProfile(primaryProfile)
       } catch (e) {
@@ -142,36 +160,58 @@ export const AuthContextProvider = ({ children }) => {
     return () => {
       query.cancel()
     }
-  }, [address, accessToken])
+  }, [address, accessToken, arr, pProfiles])
 
   useEffect(() => {
-    console.log(primaryProfile?.metadata)
-    if (!primaryProfile?.metadata) return
-    ;(async () => {
-      setData({
-        name: "",
-        bio: "",
-      })
-      try {
-        const res = await fetch(parseURL(primaryProfile?.metadata))
-        if (res.status === 200) {
-          const data = await res.json()
-          console.log(data)
-          setData(data)
-        }
-      } catch (e) {
-        window.alert(e.message)
+    // console.log(primaryProfile?.metadata)
+    // if (!primaryProfile?.metadata) return
+    // ;(async () => {
+    //   setData({
+    //     name: "",
+    //     bio: "",
+    //   })
+    //   try {
+    //     const res = await fetch(parseURL(primaryProfile?.metadata))
+    //     if (res.status === 200) {
+    //       const data = await res.json()
+    //       console.log(data)
+    //       setData(data)
+    //     }
+    //   } catch (e) {
+    //     window.alert(e.message)
+    //   }
+    // })()
+  }, [primaryProfile?.metadata])
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .upsert({
+          cc_profile_id: primaryProfile?.profileID,
+          address,
+        })
+        .eq("cc_profile_id", primaryProfile?.profileID)
+      console.log(data)
+      if (error) {
+        throw error
       }
-    })()
-  }, [primaryProfile?.metadata])
 
-  useEffect(() => {
-    if (!primaryProfile?.metadata) return
-    const ipfsHash = primaryProfile?.metadata
-    ;async () => {
-      console.log(fetchFile(ipfsHash))
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select()
+      if (profilesError) {
+        throw error
+      }
+      console.log(profiles)
+      if (profiles) {
+        await fetchProfile(profiles)
+        await fetchSubscribers()
+      }
     }
-  }, [primaryProfile?.metadata])
+
+    fetch()
+  }, [accessToken])
 
   /**Function to connect with MetaMask Wallet */
   const connectWallet = async () => {
@@ -227,7 +267,12 @@ export const AuthContextProvider = ({ children }) => {
       }
     }
   }
+  // console.log(arr)
+  useEffect(() => {
+    // console.log(arr)
+  }, [pProfiles])
 
+  // console.log(allSub)
   return (
     <AuthContext.Provider
       value={{
@@ -246,8 +291,6 @@ export const AuthContextProvider = ({ children }) => {
         setIndexingProfiles,
         checkNetwork,
         connectWallet,
-        login,
-        setLogin,
         profileHandle,
         profileImage,
         createContext,
@@ -256,8 +299,10 @@ export const AuthContextProvider = ({ children }) => {
         setCreatePost,
         pProfiles,
         setPProfiles,
+        login,
+        setLogin,
+        arr,
         allSub,
-        setAllSub,
       }}
     >
       {children}

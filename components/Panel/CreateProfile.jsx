@@ -44,10 +44,12 @@ const CreateProfile = ({ createProfile, setCreateProfile }) => {
       }
       /**Upload metadata to IPFS */
       // const ipfsHash = await pinJSONToIPFS(metadata)
-
-      const someData = new Blob([avatar])
-      const ipfsHash = await client.storeBlob(someData)
-      console.log(ipfsHash)
+      let ipfsHash
+      if (imageToPost) {
+        const someData = new Blob([imageToPost])
+        ipfsHash = await client.storeBlob(someData)
+        console.log(ipfsHash)
+      }
 
       const signer = provider.getSigner()
 
@@ -64,8 +66,8 @@ const CreateProfile = ({ createProfile, setCreateProfile }) => {
         {
           to: address,
           handle: handle.toLowerCase(),
-          metadata: "",
-          avatar: avatar,
+          metadata: ipfsHash || "",
+          avatar: "",
           operator: "0x85AAc6211aC91E92594C01F8c9557026797493AE",
         },
         0x0,
@@ -102,7 +104,7 @@ const CreateProfile = ({ createProfile, setCreateProfile }) => {
 
   const param = {
     handle: name,
-    avatar: imageToPost,
+    avatar: "",
     name: firstName + lastName,
     bio: bio,
   }

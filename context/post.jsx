@@ -30,7 +30,7 @@ export const PostContextProvider = ({ children }) => {
 
   // console.log(postParam)
 
-  const fetch = async (address, QUERY_PARAM) => {
+  const fetchPost = async (address, QUERY_PARAM) => {
     let query
     try {
       query = useCancellableQuery({
@@ -63,11 +63,18 @@ export const PostContextProvider = ({ children }) => {
 
         data.forEach(async (el) => {
           let obj = {}
-          const hash = el?.node.body
-          const body = await fetchMetadata(hash)
-          obj = { ...el?.node, body: body }
+          if (el?.node.body !== "") {
+            const hash = el?.node.body
+            const body = await fetchMetadata(hash)
+            obj = { ...el?.node, body: body }
+          }
+
           console.log(obj)
-          setPost((prev) => [...prev, obj])
+          setPost((prev) =>
+            [...prev, obj].sort((a, b) => {
+              return new Date(b.createdAt) - new Date(a.createdAt)
+            })
+          )
         })
         console.log(post)
         // setPost(data)
@@ -77,7 +84,7 @@ export const PostContextProvider = ({ children }) => {
     }
 
     fetch()
-  }, [primaryProfile])
+  }, [address])
 
   // fetch Comments
   useEffect(() => {
@@ -118,24 +125,54 @@ export const PostContextProvider = ({ children }) => {
           },
         })
         const res = await querySub
+        console.log(res)
         const subPost = res?.data?.address?.wallet?.subscribings?.edges
-        for (let i = 0; i < subPost.length; i++) {
-          const element = subPost[i]
-          const address = element?.node?.profile?.owner?.address
-          console.log(address)
-          const res = await fetch(address, GET_POST_BY_ADDRESS)
-          // console.log(res)
-          // console.log("Res is here")
+        console.log(subPost)
+        // for (let i = 0; i < subPost.length; i++) {
+        //   const element = subPost[i]
+        //   const address = element?.node?.profile?.owner?.address
+        //   console.log(address)
+        //   const res = await fetch(address, GET_POST_BY_ADDRESS)
+        //   console.log(res)
+        //   // console.log("Res is here")
+        //   const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
+        //   console.log(data)
+        //   setSubData(data)
+        //   data.forEach(async (el) => {
+        //     // console.log(el?.node)
+        //     let obj = {}
+        //     if (el?.node?.body !== "") {
+        //       const hash = el?.node.body
+        //       const body = await fetchMetadata(hash)
+        //       obj = { ...el?.node, body: body }
+        //     } else {
+        //       obj = el?.node
+        //     }
+        //     console.log(obj)
+        //     setPost((prev) => [...prev, obj])
+        //     setSubscribePosts((prev) => [...prev, el?.node])
+        //   })
+        //   // console.log(subscribePosts)
+        // }
+        subPost.forEach(async (el) => {
+          const address = el?.node?.profile?.owner?.address
+          const res = await fetchPost(address, GET_POST_BY_ADDRESS)
           const data = res?.data?.address?.wallet?.primaryProfile?.posts?.edges
           // console.log(data)
-          setSubData(data)
-          data.forEach((el) => {
-            // console.log(el?.node)
-            setPost((prev) => [...prev, el?.node])
-            setSubscribePosts((prev) => [...prev, el?.node])
+          console.log(data)
+          data.forEach(async (el) => {
+            let obj = {}
+            if (el?.node?.body !== "") {
+              const hash = el?.node?.body
+              const body = await fetchMetadata(hash)
+              obj = { ...el?.node, body: body }
+            } else {
+              obj = el?.node
+            }
+            console.log(el)
+            setPost((prev) => [...prev, obj])
           })
-          // console.log(subscribePosts)
-        }
+        })
       } catch (e) {
         console.log(e.message)
         // alert(e.message)
@@ -143,7 +180,7 @@ export const PostContextProvider = ({ children }) => {
     }
 
     fetchSubscribers()
-  }, [primaryProfile])
+  }, [address])
 
   return (
     <PostContext.Provider

@@ -51,23 +51,24 @@ const Posts = () => {
 
     fetch()
   }, [postParam])
-  console.log(post)
 
   return (
     <div>
       {post.map((post) => {
-        return (
-          <Post
-            key={post.contentID}
-            name={post.authorHandle || profileHandle}
-            message={post.title}
-            email={post.email}
-            timestamp={post.createdAt}
-            image={profileImage}
-            postImage={post.body}
-            id={post.contentID}
-          />
-        )
+        if (post.title) {
+          return (
+            <Post
+              key={post.contentID}
+              name={post.authorHandle || profileHandle}
+              message={post.title}
+              email={post.email}
+              timestamp={post.createdAt}
+              image={profileImage}
+              postImage={post.body}
+              id={post.contentID}
+            />
+          )
+        }
       })}
     </div>
   )
